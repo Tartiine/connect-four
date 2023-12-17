@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -17,8 +18,11 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("main-fxml"), 720, 700);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/Quicksand-VariableFont.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/Nunito-VariableFont"), 14);
+        scene = new Scene(loadFXML("main-fxml"), 710, 730);
         stage.setScene(scene);
+        stage.setTitle("Connect 4 Game");
         stage.show();
     }
 

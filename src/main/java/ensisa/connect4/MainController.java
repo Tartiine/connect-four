@@ -1,10 +1,16 @@
 package ensisa.connect4;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -19,15 +25,19 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.util.Duration;
 
 public class MainController {
     private MainGame game;
 
     @FXML
     private Pane gridPane;
+    @FXML
+    private Label messageLabel;
     private Circle[][] gridCircles;
     private final Color PLAYER_1_COLOR = Color.valueOf("#92bccd");
     private final Color PLAYER_2_COLOR = Color.valueOf("#e8b18f");
+    private List<Button> columnButtons = new ArrayList<>();
 
     public void initialize() {
         game = new MainGame();
@@ -71,6 +81,7 @@ public class MainController {
             button.setPrefSize(buttonWidth, buttonHeight);
             button.setOnAction(event -> onColumnClicked(col));
             buttonBox.getChildren().add(button);
+            columnButtons.add(button);
         }
 
         gridPane.getChildren().add(buttonBox);
@@ -88,7 +99,6 @@ public class MainController {
         button.setBorder(new Border(new BorderStroke(Paint.valueOf("#CCCCCC"), 
             BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT)));
 
-        // Style au survol
         button.setOnMouseEntered(e -> {
             button.setBorder(new Border(new BorderStroke(Paint.valueOf("#AAAAAA"), 
                 BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT)));
@@ -126,32 +136,59 @@ public class MainController {
         int row = game.placeToken(col);
         if (row != -1) {
             drawToken(col, row, game.getCurrentPlayer());
-            
-            // Check for a win after the token is placed
             boolean win = game.checkForWin();
             if (win) {
-                displayWinMessage(game.getCurrentPlayer());
+                displayMessage("Player " + game.getCurrentPlayer() + " wins!", Color.GREEN);
+                disableColumnButtons(); 
+            } else if (game.isDraw()) {
+                displayMessage("It's a draw!", Color.ORANGE);
+                disableColumnButtons();
             } else {
                 game.changeCurrentPlayer();
+                Color currentPlayerColor = (game.getCurrentPlayer() == 1) ? PLAYER_1_COLOR : PLAYER_2_COLOR;
+                displayMessage("Player " + game.getCurrentPlayer() + "'s turn", currentPlayerColor);
+                
             }
         } else {
-            displayFullColumnMessage();
+            showToast("This column is full. Please choose another column.");
         }
     }
 
-    private void displayWinMessage(int player) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Over");
-        alert.setHeaderText(null);
-        alert.setContentText("Player " + player + " wins!");
-        alert.showAndWait();
+    public void displayMessage(String message, Color textColor) {
+        messageLabel.setTextFill(textColor); 
+        messageLabel.setText(message);      
     }
 
-    private void displayFullColumnMessage() {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Invalid Move");
-        alert.setHeaderText(null);
-        alert.setContentText("This column is full. Please choose another column.");
-        alert.showAndWait();
+    private void disableColumnButtons() {
+        for (Button button : columnButtons) {
+            button.setDisable(true);
+        }
     }
+    //TODO:Change color to red and position to middle top
+    public void showToast(String message) {
+        Label toastLabel = new Label(message);
+        toastLabel.getStyleClass().add("toast");
+        toastLabel.setLayoutX(50); // Center horizontally, modify to suit your layout
+        toastLabel.setLayoutY(gridPane.getHeight() - 30); // Position at the bottom
+
+        gridPane.getChildren().add(toastLabel);
+
+        FadeTransition fadeInTransition = new FadeTransition(Duration.seconds(0.5), toastLabel);
+        fadeInTransition.setFromValue(0.0);
+        fadeInTransition.setToValue(1.0);
+        fadeInTransition.play();
+
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), evt -> {
+            FadeTransition fadeOutTransition = new FadeTransition(Duration.seconds(0.5), toastLabel);
+            fadeOutTransition.setFromValue(1.0);
+            fadeOutTransition.setToValue(0.0);
+            fadeOutTransition.setOnFinished(event -> gridPane.getChildren().remove(toastLabel));
+            fadeOutTransition.play();
+        }));
+
+        timeline.play();
+    }
+
+    
 }

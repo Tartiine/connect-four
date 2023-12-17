@@ -29,7 +29,7 @@ public class MainGame{
         return -1;
     }
 
-    //Add somthing to stop the game if draw (if board is completely 1 or 2)
+
     public boolean checkForWin() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols - 3; col++) {
@@ -76,6 +76,17 @@ public class MainGame{
         }
     
         return false;
+    }
+
+    public boolean isDraw() {
+        for (int row = 0; row < rows; row ++) {
+            for (int col = 0; col < cols; col++) {
+                if (board[row][col] == 0){
+                        return false;
+                }
+            }
+        }
+        return true;
     }
 
 
