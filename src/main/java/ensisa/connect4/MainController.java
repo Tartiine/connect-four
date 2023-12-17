@@ -2,6 +2,7 @@ package ensisa.connect4;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
@@ -20,12 +21,17 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 public class MainController {
+    private MainGame game;
 
     @FXML
     private Pane gridPane;
     private Circle[][] gridCircles;
+    private final Color PLAYER_1_COLOR = Color.valueOf("#92bccd");
+    private final Color PLAYER_2_COLOR = Color.valueOf("#e8b18f");
 
     public void initialize() {
+        game = new MainGame();
+
         final int rows = 6;
         final int cols = 7;
         final double radius = 40.0;
@@ -39,8 +45,9 @@ public class MainController {
         gridCircles = new Circle[rows][cols];
 
         double startX = (720 - gridWidth) / 2 + radius;
-        double startY = (620 - gridHeight) / 2 + radius + buttonHeight + 10; // Ajouter 10 pixels de marge
+        double startY = (620 - gridHeight) / 2 + radius + buttonHeight + 10; 
 
+        
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 Circle circle = new Circle(radius, Color.WHITE);
@@ -59,12 +66,10 @@ public class MainController {
         buttonBox.setLayoutX(startX - radius);
 
         for (int i = 0; i < cols; i++) {
-            int col = i; // Variable finale pour l'utilisation dans l'expression lambda
+            int col = i; 
             Button button = createStyledButton(col);
             button.setPrefSize(buttonWidth, buttonHeight);
-            button.setOnAction(event -> {
-                // Logic to handle token drop in column i
-            });
+            button.setOnAction(event -> onColumnClicked(col));
             buttonBox.getChildren().add(button);
         }
 
@@ -107,5 +112,46 @@ public class MainController {
                 gridCircles[i][col].setStroke(null);
             }
         }
+    }
+
+    public void drawToken(int col, int row, int player) {
+        if (player == 1){
+            gridCircles[row][col].setFill(PLAYER_1_COLOR);
+        }else{
+           gridCircles[row][col].setFill(PLAYER_2_COLOR); 
+        }
+    }
+
+    public void onColumnClicked(int col) {
+        int row = game.placeToken(col);
+        if (row != -1) {
+            drawToken(col, row, game.getCurrentPlayer());
+            
+            // Check for a win after the token is placed
+            boolean win = game.checkForWin();
+            if (win) {
+                displayWinMessage(game.getCurrentPlayer());
+            } else {
+                game.changeCurrentPlayer();
+            }
+        } else {
+            displayFullColumnMessage();
+        }
+    }
+
+    private void displayWinMessage(int player) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Over");
+        alert.setHeaderText(null);
+        alert.setContentText("Player " + player + " wins!");
+        alert.showAndWait();
+    }
+
+    private void displayFullColumnMessage() {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Invalid Move");
+        alert.setHeaderText(null);
+        alert.setContentText("This column is full. Please choose another column.");
+        alert.showAndWait();
     }
 }
