@@ -93,7 +93,7 @@ public class MainGame{
     }
 
     public boolean isColumnFull(int col) {
-        return board[0][col] != 0; 
+        return board[0][col] != 0;
     }
 
     public int decideAITurn() {
@@ -105,12 +105,16 @@ public class MainGame{
         }
 
         if (availableColumns.isEmpty()) {
-            return -1; 
+            return -1;
         }
 
-        int randomIndex = (int) (Math.random() * availableColumns.size());
-        return availableColumns.get(randomIndex);
+        int[][] boardCopy = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            boardCopy[i] = board[i].clone();
+        }
+
+        AI ai = new AI(this, 3, true); // Replace with the desired depth and pruning flag
+        int aiColumn = ai.minimax(boardCopy, ai.getDepth(), Integer.MIN_VALUE, Integer.MAX_VALUE, true)[0];
+        return aiColumn;
     }
-
-
 }
