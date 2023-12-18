@@ -9,9 +9,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * JavaFX App
- */
 public class App extends Application {
 
     private static Scene scene;
@@ -19,10 +16,9 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         Font.loadFont(getClass().getResourceAsStream("/fonts/Quicksand-VariableFont.ttf"), 14);
-        Font.loadFont(getClass().getResourceAsStream("/fonts/Nunito-VariableFont"), 14);
-        scene = new Scene(loadFXML("main-fxml"), 710, 730);
+        scene = new Scene(loadFXML("menu-fxml"), 700, 750);
         stage.setScene(scene);
-        stage.setTitle("Connect 4 Game");
+        stage.setTitle("Connect 4 Game - Menu");
         stage.show();
     }
 
@@ -39,4 +35,15 @@ public class App extends Application {
         launch();
     }
 
+    static void showMainView(boolean HALActivated) throws IOException {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("main-fxml.fxml"));
+        Parent root = loader.load();
+
+        MainController controller = loader.getController();
+        controller.setHALActivated(HALActivated);
+
+        scene.setRoot(root);
+    }
+
+    
 }

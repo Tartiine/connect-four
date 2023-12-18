@@ -1,5 +1,8 @@
 package ensisa.connect4;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainGame{
     private int rows = 6;
     private int cols = 7;
@@ -87,6 +90,26 @@ public class MainGame{
             }
         }
         return true;
+    }
+
+    public boolean isColumnFull(int col) {
+        return board[0][col] != 0; 
+    }
+
+    public int decideAITurn() {
+        List<Integer> availableColumns = new ArrayList<>();
+        for (int i = 0; i < cols; i++) {
+            if (!isColumnFull(i)) {
+                availableColumns.add(i);
+            }
+        }
+
+        if (availableColumns.isEmpty()) {
+            return -1; 
+        }
+
+        int randomIndex = (int) (Math.random() * availableColumns.size());
+        return availableColumns.get(randomIndex);
     }
 
 
