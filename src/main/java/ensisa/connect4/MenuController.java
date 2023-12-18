@@ -34,7 +34,7 @@ public class MenuController {
     @FXML
     private void handleSettings() {
         System.out.println("Settings button clicked");
-        //Implement settings logic here
+        //TODO:Implement settings logic here
     }
 
     @FXML

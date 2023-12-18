@@ -8,6 +8,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -46,6 +47,7 @@ public class MainController {
     private List<Button> columnButtons = new ArrayList<>();
     private boolean HALActivated;
 
+//TODO:Add random player at the beginning
     public void initialize() {
         game = new MainGame();
         setupGameGrid();
@@ -138,8 +140,20 @@ public class MainController {
 
     public void drawToken(int col, int row, int player) {
         Color color = (player == 1) ? PLAYER_1_COLOR : PLAYER_2_COLOR;
-        gridCircles[row][col].setFill(color);
+        Circle animatedCircle = new Circle(gridCircles[0][col].getCenterX(), gridCircles[0][col].getCenterY(), gridCircles[0][col].getRadius(), color);
+        gridPane.getChildren().add(animatedCircle);
+
+        double finalY = gridCircles[row][col].getCenterY();
+        TranslateTransition animation = new TranslateTransition(Duration.seconds(0.5), animatedCircle);
+        animation.setToY(finalY - animatedCircle.getCenterY());
+        animation.setOnFinished(e -> {
+            gridPane.getChildren().remove(animatedCircle);
+            gridCircles[row][col].setFill(color);
+        });
+
+        animation.play();
     }
+
 
     public void onColumnClicked(int col) {
         if (!processTurn(col)) {
