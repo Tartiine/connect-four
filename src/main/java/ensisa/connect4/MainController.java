@@ -180,6 +180,11 @@ public class MainController {
         do {
             aiColumn = game.decideAITurn();
         } while (!processTurn(aiColumn));
+
+        game.changeCurrentPlayer();
+
+        // Check and update the game state after both player and AI turns
+        updateGameState();
     }
 
     private boolean updateGameState() {
