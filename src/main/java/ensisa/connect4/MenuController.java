@@ -34,7 +34,7 @@ public class MenuController {
     @FXML
     private void handleSettings() {
         System.out.println("Settings button clicked");
-        //TODO:Implement settings logic here
+        //TODO:Implement settings logic here, possibility to change the sound volume of the player and maybe need to give it to the main menu after ?
     }
 
     @FXML

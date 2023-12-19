@@ -9,7 +9,7 @@ public class AI {
     private static final int ROW_COUNT = 6;
     private static final int COLUMN_COUNT = 7;
     private static final int WINDOW_LENGTH = 4;
-
+    //TODO: Delete pruning var
     private final MainGame game;
     private final int depth;
     private final boolean pruning;
@@ -36,7 +36,6 @@ public class AI {
 
 
     public boolean winningMove(int[][] board, int piece) {
-        // Check horizontal locations for win
         for (int c = 0; c < COLUMN_COUNT - 3; c++) {
             for (int r = 0; r < ROW_COUNT; r++) {
                 if (board[r][c] == piece && board[r][c+1] == piece && board[r][c+2] == piece && board[r][c+3] == piece) {
@@ -45,7 +44,6 @@ public class AI {
             }
         }
 
-        // Check vertical locations for win
         for (int c = 0; c < COLUMN_COUNT; c++) {
             for (int r = 0; r < ROW_COUNT - 3; r++) {
                 if (board[r][c] == piece && board[r + 1][c] == piece && board[r + 2][c] == piece && board[r + 3][c] == piece) {
@@ -54,7 +52,6 @@ public class AI {
             }
         }
 
-        // Check positively sloped diagonals
         for (int c = 0; c < COLUMN_COUNT - 3; c++) {
             for (int r = 0; r < ROW_COUNT - 3; r++) {
                 if (board[r][c] == piece &&
@@ -66,7 +63,6 @@ public class AI {
             }
         }
 
-        // Check negatively sloped diagonals
         for (int c = 0; c < COLUMN_COUNT - 3; c++) {
             for (int r = 3; r < ROW_COUNT; r++) {
                 if (board[r][c] == piece &&

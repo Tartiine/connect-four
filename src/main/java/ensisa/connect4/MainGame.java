@@ -8,6 +8,11 @@ public class MainGame{
     private int cols = 7;
     private int[][] board; // 0 = vide, 1 = joueur 1, 2 = joueur 2
     private int currentPlayer;
+    private List<int[]> winningPosition = new ArrayList<>();
+
+    public List<int[]> getWinningPosition() {
+        return winningPosition;
+    }
 
     public int getCurrentPlayer() {
         return currentPlayer;
@@ -42,6 +47,10 @@ public class MainGame{
                     board[row][col] == board[row][col + 1] &&
                     board[row][col] == board[row][col + 2] &&
                     board[row][col] == board[row][col + 3]) {
+                    winningPosition.add(new int[]{row, col});
+                    winningPosition.add(new int[]{row, col + 1});
+                    winningPosition.add(new int[]{row, col + 2});
+                    winningPosition.add(new int[]{row, col + 3});
                     return true;
                 }
             }
@@ -53,6 +62,10 @@ public class MainGame{
                     board[row][col] == board[row + 1][col] &&
                     board[row][col] == board[row + 2][col] &&
                     board[row][col] == board[row + 3][col]) {
+                    winningPosition.add(new int[]{row, col});
+                    winningPosition.add(new int[]{row + 1, col});
+                    winningPosition.add(new int[]{row + 2, col});
+                    winningPosition.add(new int[]{row + 3, col});
                     return true;
                 }
             }
@@ -64,6 +77,10 @@ public class MainGame{
                     board[row][col] == board[row + 1][col + 1] &&
                     board[row][col] == board[row + 2][col + 2] &&
                     board[row][col] == board[row + 3][col + 3]) {
+                    winningPosition.add(new int[]{row, col});
+                    winningPosition.add(new int[]{row + 1, col + 1});
+                    winningPosition.add(new int[]{row + 2, col + 2});
+                    winningPosition.add(new int[]{row + 3, col + 3});
                     return true;
                 }
             }
@@ -75,6 +92,10 @@ public class MainGame{
                     board[row][col] == board[row + 1][col - 1] &&
                     board[row][col] == board[row + 2][col - 2] &&
                     board[row][col] == board[row + 3][col - 3]) {
+                    winningPosition.add(new int[]{row, col});
+                    winningPosition.add(new int[]{row + 1, col - 1});
+                    winningPosition.add(new int[]{row + 2, col - 2});
+                    winningPosition.add(new int[]{row + 3, col - 3});
                     return true;
                 }
             }

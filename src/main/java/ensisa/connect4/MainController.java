@@ -1,5 +1,6 @@
 package ensisa.connect4;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,8 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -44,10 +47,12 @@ public class MainController {
     private final Color PLAYER_2_COLOR = Color.valueOf("#e8b18f");
     private List<Button> columnButtons = new ArrayList<>();
     private boolean HALActivated;
+    private MediaPlayer mediaPlayer;
 
 //TODO:Add random player at the beginning
     public void initialize() {
         game = new MainGame();
+        playBackgroundMusic();
         setupGameGrid();
         setupColumnButtons();
         displayMessage("Player 1's turn", PLAYER_1_COLOR);
@@ -115,24 +120,33 @@ public class MainController {
 
         button.setOnMouseEntered(e -> {
             button.setBorder(new Border(new BorderStroke(Paint.valueOf("#AAAAAA"), BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT)));
-            highlightColumn(col, true);
+            highlightColumn(col, true,"#AAAAAA");
         });
         button.setOnMouseExited(e -> {
             button.setBorder(new Border(new BorderStroke(Paint.valueOf("#CCCCCC"), BorderStrokeStyle.SOLID, new CornerRadii(5), BorderWidths.DEFAULT)));
-            highlightColumn(col, false);
+            highlightColumn(col, false,"#AAAAAA");
         });
 
         return button;
     }
 
-    private void highlightColumn(int col, boolean highlight) {
+    private void highlightColumn(int col, boolean highlight, String color) {
         for (int i = 0; i < gridCircles.length; i++) {
             if (highlight) {
-                gridCircles[i][col].setStroke(Paint.valueOf("#AAAAAA"));
+                gridCircles[i][col].setStroke(Paint.valueOf(color));
                 gridCircles[i][col].setStrokeWidth(2);
             } else {
                 gridCircles[i][col].setStroke(null);
             }
+        }
+    }
+    
+    private void highlightWinningConfiguration(List<int[]> winningPositions) {
+        for (int[] pos : winningPositions) {
+            int row = pos[0];
+            int col = pos[1];
+            gridCircles[row][col].setStroke(Color.GREEN); 
+            gridCircles[row][col].setStrokeWidth(3); 
         }
     }
 
@@ -166,11 +180,17 @@ public class MainController {
         int row = game.placeToken(col);
         if (row == -1) {
             showToast("This column is full. Please choose another column.");
+            highlightColumn(col, true, "#FF0000"); 
+            PauseTransition pause = new PauseTransition(Duration.seconds(0.8));
+            pause.setOnFinished(e -> highlightColumn(col, false, "#FF0000")); 
+            pause.play();
+            
             return false;
         }
         drawToken(col, row, game.getCurrentPlayer());
         return updateGameState();
     }
+    
 
     private void handleAITurn() {
         int aiColumn = game.decideAITurn();
@@ -186,7 +206,11 @@ public class MainController {
         boolean win = game.checkForWin();
         if (win) {
             displayMessage("Player " + game.getCurrentPlayer() + " wins!", Color.GREEN);
+            List<int[]> winningPosition = game.getWinningPosition();
             disableColumnButtons();
+            PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
+            pause.setOnFinished(event -> highlightWinningConfiguration(winningPosition));
+            pause.play();
             return false;
         }
 
@@ -215,6 +239,7 @@ public class MainController {
     public void displayMessage(String message, Color textColor) {
         messageLabel.setTextFill(textColor);
         messageLabel.setText(message);
+        //Police un peu plus grande et un peu plus epaisse
     }
 
     public void showToast(String message) {
@@ -249,6 +274,9 @@ public class MainController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("menu-fxml.fxml"));
             Parent root = loader.load();
             gridPane.getScene().setRoot(root);
+            if (mediaPlayer != null) {
+                mediaPlayer.stop(); 
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -268,6 +296,7 @@ public class MainController {
         for (Circle[] row : gridCircles) {
             for (Circle circle : row) {
                 circle.setFill(Color.WHITE);
+                circle.setStroke(null);
             }
         }
 
@@ -282,4 +311,17 @@ public class MainController {
     public void setHALActivated(boolean HALActivated) {
         this.HALActivated = HALActivated;
     }
+    //TODO: Bloquer plein ecran
+    private void playBackgroundMusic() {
+    try {
+        String musicFile = "src\\main\\resources\\ensisa\\connect4\\music\\puzzle_music.mp3"; 
+        Media sound = new Media(new File(musicFile).toURI().toString());
+        mediaPlayer = new MediaPlayer(sound);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        mediaPlayer.play();
+    } catch (Exception e) {
+        System.err.println("Error playing background music: " + e.getMessage());
+    }
+}
+
 }

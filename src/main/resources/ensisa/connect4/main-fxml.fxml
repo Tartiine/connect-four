@@ -13,7 +13,7 @@
         <HBox alignment="CENTER" spacing="10" style="-fx-background-color: #e7eff6; -fx-padding: 10px;">
             <Button fx:id="mainMenuButton" text="Main Menu" onAction="#handleMainMenu" style="-fx-background-color: #a3c4f3; -fx-text-fill: white; -fx-background-radius: 15px; -fx-padding: 10px; -fx-font-size: 16px; -fx-min-width: 100px; -fx-min-height: 40px;"/>
             <Pane HBox.hgrow="ALWAYS" /> 
-            <Label fx:id="messageLabel" style="-fx-font-family: 'Quicksand'; -fx-font-size: 16px; -fx-background-color: transparent;" />
+            <Label fx:id="messageLabel" style="-fx-font-family: 'Quicksand'; -fx-font-size: 21px; -fx-background-color: transparent;" />
             <Pane HBox.hgrow="ALWAYS" /> 
             <Button fx:id="restartButton" text="Restart" onAction="#handleRestart" style="-fx-background-color: #a3c4f3; -fx-text-fill: white; -fx-background-radius: 15px; -fx-padding: 10px; -fx-font-size: 16px; -fx-min-width: 100px; -fx-min-height: 40px;"/>
         </HBox>
