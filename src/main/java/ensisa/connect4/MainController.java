@@ -50,6 +50,7 @@ public class MainController {
     private MediaPlayer mediaPlayer;
 
 //TODO:Add random player at the beginning
+//TODO:Add shadows on the title like for settings
     public void initialize() {
         game = new MainGame();
         playBackgroundMusic();
@@ -239,7 +240,6 @@ public class MainController {
     public void displayMessage(String message, Color textColor) {
         messageLabel.setTextFill(textColor);
         messageLabel.setText(message);
-        //Police un peu plus grande et un peu plus epaisse
     }
 
     public void showToast(String message) {
@@ -311,7 +311,7 @@ public class MainController {
     public void setHALActivated(boolean HALActivated) {
         this.HALActivated = HALActivated;
     }
-    //TODO: Bloquer plein ecran
+
     private void playBackgroundMusic() {
     try {
         String musicFile = "src\\main\\resources\\ensisa\\connect4\\music\\puzzle_music.mp3"; 

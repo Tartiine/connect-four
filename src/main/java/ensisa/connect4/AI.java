@@ -9,15 +9,12 @@ public class AI {
     private static final int ROW_COUNT = 6;
     private static final int COLUMN_COUNT = 7;
     private static final int WINDOW_LENGTH = 4;
-    //TODO: Delete pruning var
     private final MainGame game;
     private final int depth;
-    private final boolean pruning;
 
-    public AI(MainGame game, int depth, boolean pruning) {
+    public AI(MainGame game, int depth) {
         this.game = game;
         this.depth = depth;
-        this.pruning = pruning;
     }
 
     public void dropPiece(int[][] board, int row, int col, int piece) {

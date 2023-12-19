@@ -136,7 +136,7 @@ public class MainGame{
             boardCopy[i] = board[i].clone();
         }
 
-        AI ai = new AI(this, 4, true); 
+        AI ai = new AI(this, 4); 
         int aiColumn = ai.minimax(boardCopy, ai.getDepth(), Integer.MIN_VALUE, Integer.MAX_VALUE, true)[0];
         return aiColumn;
     }

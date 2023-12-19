@@ -5,20 +5,25 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class App extends Application {
-
+    //TODO: Bloquer plein ecran
     private static Scene scene;
 
     @Override
     public void start(Stage stage) throws IOException {
-        Font.loadFont(getClass().getResourceAsStream("/fonts/Quicksand-VariableFont.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/Quicksand-VariableFont_wght.ttf"), 14);
         scene = new Scene(loadFXML("menu-fxml"), 700, 750);
         stage.setScene(scene);
         stage.setTitle("Connect 4 Game - Menu");
+        stage.setMinWidth(750);
+        stage.setMinHeight(700);
+        stage.setMaxWidth(750);
+        stage.setMaxHeight(700);
         stage.show();
     }
 
@@ -43,6 +48,11 @@ public class App extends Application {
         controller.setHALActivated(HALActivated);
 
         scene.setRoot(root);
+    }
+
+    static void showSettingsView() throws IOException {
+        Parent settingsRoot = loadFXML("settings-fxml"); 
+        scene.setRoot(settingsRoot);
     }
 
     
