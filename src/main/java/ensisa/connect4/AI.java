@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class AI {
-    private static final int MINIMAX = 1;
     private static final int EMPTY = 0;
     private static final int ROW_COUNT = 6;
     private static final int COLUMN_COUNT = 7;
@@ -95,25 +94,66 @@ public class AI {
         return true;
     }
 
-
     public int evaluateWindow(int[] window, int piece) {
         int score = 0;
         int oppPiece = (piece == 1) ? 2 : 1;
-
-        if (countOccurrences(window, piece) == 4) {
+    
+        int myCount = countOccurrences(window, piece);
+        int oppCount = countOccurrences(window, oppPiece);
+        int emptyCount = countOccurrences(window, EMPTY);
+    
+        if (myCount == 4) {
             score += 100;
-        } else if (countOccurrences(window, piece) == 3 && countOccurrences(window, EMPTY) == 1) {
+        } else if (myCount == 3 && emptyCount == 1) {
             score += 5;
-        } else if (countOccurrences(window, piece) == 2 && countOccurrences(window, EMPTY) == 2) {
+        } else if (myCount == 2 && emptyCount == 2) {
             score += 2;
         }
-
-        if (countOccurrences(window, oppPiece) == 3 && countOccurrences(window, EMPTY) == 1) {
-            score -= 4;
+    
+        if (oppCount == 3 && emptyCount == 1) {
+            score -= 3;
         }
-
+    
         return score;
     }
+
+    public int immediateThreatColumn(int[][] board, int oppPiece) {
+        for (int c = 0; c < COLUMN_COUNT; c++) {
+            for (int r = 0; r < ROW_COUNT; r++) {
+                int[] window = getWindow(board, c, r);
+                if (window == null) continue; 
+    
+                if (countOccurrences(window, oppPiece) == 3 && countOccurrences(window, EMPTY) == 1) {
+                    int emptyIndex = findEmptyIndex(window);
+                    if (r + emptyIndex < ROW_COUNT && board[r + emptyIndex][c] == EMPTY) {
+                        return c; 
+                    }
+                }
+            }
+        }
+        return -1; 
+    }
+    
+    private int findEmptyIndex(int[] window) {
+        for (int i = 0; i < window.length; i++) {
+            if (window[i] == EMPTY) {
+                return i;
+            }
+        }
+        return -1; // Return -1 if no empty spot is found
+    }
+    
+    private int[] getWindow(int[][] board, int col, int rowStart) {
+        if (col >= 0 && col < COLUMN_COUNT && rowStart >= 0 && rowStart + WINDOW_LENGTH <= ROW_COUNT) {
+            int[] window = new int[WINDOW_LENGTH];
+            for (int i = 0; i < WINDOW_LENGTH; i++) {
+                window[i] = board[rowStart + i][col];
+            }
+            return window;
+        }
+        return null; // Return null if the window is out of bounds
+    }
+    
 
     public int getDepth() {
         return depth;
@@ -122,8 +162,6 @@ public class AI {
     public int scorePosition(int[][] board, int piece) {
         int score = 0;
 
-        // Score center column
-        int centerRow = ROW_COUNT / 2;
         int centerColumn = COLUMN_COUNT / 2;
         int[] centerArray = new int[ROW_COUNT];
         for (int i = 0; i < ROW_COUNT; i++) {
@@ -175,13 +213,12 @@ public class AI {
     }
 
 
-    public int[] minimax(int[][] board, int depth, int alpha, int beta, boolean maximizingPlayer) {
-        List<Integer> validLocations = getValidLocations(board);
-        boolean isTerminal = isTerminalNode(board);
+public int[] minimax(int[][] board, int depth, int alpha, int beta, boolean maximizingPlayer) {
+    List<Integer> validLocations = getValidLocations(board);
+    boolean isTerminal = isTerminalNode(board);
 
-        if (depth == 0) {
-            return new int[]{-1, scorePosition(board, game.getCurrentPlayer())};
-        } else if (isTerminal) {
+    if (depth == 0 || isTerminal) {
+        if (isTerminal) {
             if (winningMove(board, game.getCurrentPlayer())) {
                 return new int[]{-1, Integer.MAX_VALUE};
             } else if (winningMove(board, (game.getCurrentPlayer() == 1) ? 2 : 1)) {
@@ -189,57 +226,46 @@ public class AI {
             } else {
                 return new int[]{-1, 0};
             }
-        }
-
-        int column = validLocations.get(0);
-        int value;
-
-        if (maximizingPlayer) {
-            value = Integer.MIN_VALUE;
-            int turn = 1;
-
-            for (int col : validLocations) {
-                int row = getNextOpenRow(board, col);
-                int[][] bCopy = copyBoard(board);
-
-                dropPiece(bCopy, row, col, game.getCurrentPlayer() * turn);
-                int newScore = minimax(bCopy, depth - 1, alpha, beta, !maximizingPlayer)[1];
-
-                if (newScore > value) {
-                    value = newScore;
-                    column = col;
-                }
-                alpha = Math.max(alpha, value);
-
-                if (pruning && alpha >= beta) {
-                    break;
-                }
-            }
         } else {
-            value = Integer.MAX_VALUE;
-            int turn = -1;
-
-            for (int col : validLocations) {
-                int row = getNextOpenRow(board, col);
-                int[][] bCopy = copyBoard(board);
-
-                dropPiece(bCopy, row, col, game.getCurrentPlayer() * turn);
-                int newScore = minimax(bCopy, depth - 1, alpha, beta, !maximizingPlayer)[1];
-
-                if (newScore < value) {
-                    value = newScore;
-                    column = col;
-                }
-                beta = Math.min(beta, value);
-
-                if (pruning && alpha >= beta) {
-                    break;
-                }
-            }
+            return new int[]{-1, scorePosition(board, game.getCurrentPlayer())};
         }
+    }
 
+    if (maximizingPlayer) {
+        int value = Integer.MIN_VALUE;
+        int column = validLocations.get(0);
+        for (int col : validLocations) {
+            int row = getNextOpenRow(board, col);
+            int[][] bCopy = copyBoard(board);
+            dropPiece(bCopy, row, col, game.getCurrentPlayer());
+            int newScore = minimax(bCopy, depth - 1, alpha, beta, false)[1];
+            if (newScore > value) {
+                value = newScore;
+                column = col;
+            }
+            alpha = Math.max(alpha, value);
+            if (alpha >= beta) break;
+        }
+        return new int[]{column, value};
+    } else {
+        int value = Integer.MAX_VALUE;
+        int column = validLocations.get(0);
+        for (int col : validLocations) {
+            int row = getNextOpenRow(board, col);
+            int[][] bCopy = copyBoard(board);
+            dropPiece(bCopy, row, col, (game.getCurrentPlayer() == 1) ? 2 : 1);
+            int newScore = minimax(bCopy, depth - 1, alpha, beta, true)[1];
+            if (newScore < value) {
+                value = newScore;
+                column = col;
+            }
+            beta = Math.min(beta, value);
+            if (alpha >= beta) break;
+        }
         return new int[]{column, value};
     }
+}
+
 
 
     private int countOccurrences(int[] array, int value) {

@@ -13,7 +13,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -31,7 +30,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainController {
@@ -170,22 +168,19 @@ public class MainController {
             showToast("This column is full. Please choose another column.");
             return false;
         }
-
         drawToken(col, row, game.getCurrentPlayer());
         return updateGameState();
     }
 
     private void handleAITurn() {
-        int aiColumn;
-        do {
-            aiColumn = game.decideAITurn();
-        } while (!processTurn(aiColumn));
-
-        game.changeCurrentPlayer();
-
-        // Check and update the game state after both player and AI turns
-        updateGameState();
+        int aiColumn = game.decideAITurn();
+        if(aiColumn != -1) {
+            processTurn(aiColumn);
+            game.changeCurrentPlayer();
+            updateGameState();
+        }
     }
+    
 
     private boolean updateGameState() {
         boolean win = game.checkForWin();

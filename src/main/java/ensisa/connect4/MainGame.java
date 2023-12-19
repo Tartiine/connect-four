@@ -23,12 +23,14 @@ public class MainGame{
     }
 
     public int placeToken(int col) {
+
         for (int i = rows - 1; i >= 0; i--) {
             if(board[i][col] == 0){
                 board[i][col] = currentPlayer;
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -113,8 +115,10 @@ public class MainGame{
             boardCopy[i] = board[i].clone();
         }
 
-        AI ai = new AI(this, 3, true); // Replace with the desired depth and pruning flag
+        AI ai = new AI(this, 4, true); 
         int aiColumn = ai.minimax(boardCopy, ai.getDepth(), Integer.MIN_VALUE, Integer.MAX_VALUE, true)[0];
         return aiColumn;
     }
+
+    
 }
